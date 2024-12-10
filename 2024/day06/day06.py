@@ -1,67 +1,35 @@
-import re
+data = [i.strip() for i in open("input.txt")]
 
-with open("input.txt", "r") as file:
-    data = file.readlines()
+grid = {}
+visited = set()
 
-char_data = [list(line.strip()) for line in data]
+for r in range(len(data)):
+    for c in range(len(data[0])):
+        grid[(r, c)] = data[r][c]
+        if data[r][c] not in "#.":
+            start = (r, c)
 
-print("Eingelesene Daten:")
-print(char_data)
+visited.add(start)
+p = [start[0], start[1]]
 
-pattern = r"[><\^v]"
-guard = []
-for row_idx, row in enumerate(char_data):
-    for col_idx, char in enumerate(row):
-        if char in "^v<>":
-            guard.append([row_idx, col_idx, char])
+if grid[start] == "^": dr, dc = -1, 0
+if grid[start] == ">": dr, dc = 0, 1
+if grid[start] == "v": dr, dc = 1, 0
+if grid[start] == "<": dr, dc = 0, -1
 
-print("Gefundene Koordinaten und Richtungen:")
-print(guard)
+print(start)
+print(dr, dc)
 
-def count_X_in_data():
-    return sum(row.count("X") for row in char_data)
+while True:
+    new = (p[0]+dr,p[1]+dc)
+    if new not in grid:
+        break
+    else:
+        if grid[new] == "#":
+            dr, dc = dc, -dr
+        else:
+            p = new
+            visited.add(p)
 
-directions = ["^", ">", "v", "<"]
+print(len(visited))
 
-visited_positions = set()  # Set, um besuchte Positionen zu speichern
-
-if guard:
-    while True:
-        row, col, direction = guard[0]
-
-        if row < 0 or col < 0 or row >= len(char_data) or col >= len(char_data[0]):
-            print("Index außerhalb des Rasters! Anzahl der 'X':", count_X_in_data())
-            break
-
-        visited_positions.add((row, col, direction))  # Position speichern
-
-        if char_data[row][col] == "#":
-            current_direction_index = directions.index(direction)
-            next_direction = directions[(current_direction_index + 1) % 4]  # Dreht sich zur nächsten Richtung
-            guard[0][2] = next_direction  # Neue Richtung setzen
-
-        if direction == "^":
-            if row <= 0 or char_data[row - 1][col] == "#":  # Überprüfen auf Rand oder '#'
-                continue  # Wächter dreht sich, falls er auf ein '#' stößt
-            guard[0][0] -= 1  # Wächter geht nach oben
-            char_data[guard[0][0]][guard[0][1]] = "X"
-
-        elif direction == ">":
-            if col >= len(char_data[0]) - 1 or char_data[row][col + 1] == "#":  # Überprüfen auf Rand oder '#'
-                continue  # Wächter dreht sich, falls er auf ein '#' stößt
-            guard[0][1] += 1  # Wächter geht nach rechts
-            char_data[guard[0][0]][guard[0][1]] = "X"
-
-        elif direction == "v":
-            if row >= len(char_data) - 1 or char_data[row + 1][col] == "#":  # Überprüfen auf Rand oder '#'
-                continue  # Wächter dreht sich, falls er auf ein '#' stößt
-            guard[0][0] += 1  # Wächter geht nach unten
-            char_data[guard[0][0]][guard[0][1]] = "X"
-
-        elif direction == "<":
-            if col <= 0 or char_data[row][col - 1] == "#":  # Überprüfen auf Rand oder '#'
-                continue  # Wächter dreht sich, falls er auf ein '#' stößt
-            guard[0][1] -= 1  # Wächter geht nach links
-            char_data[guard[0][0]][guard[0][1]] = "X"
-
-print("Anzahl der X in den Daten:", count_X_in_data())
