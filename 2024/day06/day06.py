@@ -10,13 +10,14 @@ for r in range(len(data)):
             start = (r, c)
 
 visited.add(start)
-p = [start[0], start[1]]
+
 
 if grid[start] == "^": dr, dc = -1, 0
 if grid[start] == ">": dr, dc = 0, 1
 if grid[start] == "v": dr, dc = 1, 0
 if grid[start] == "<": dr, dc = 0, -1
 
+p = (start[0], start[1])
 print(start)
 print(dr, dc)
 
@@ -28,8 +29,9 @@ while True:
         if grid[new] == "#":
             dr, dc = dc, -dr
         else:
-            p = new
+            p = (new)
             visited.add(p)
+
 
 print(len(visited))
 
