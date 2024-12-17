@@ -1,4 +1,4 @@
-data = [i.strip() for i in open("input.txt")]
+data = [i.strip() for i in open("test.txt")]
 
 grid = {}
 visited = set()
@@ -17,21 +17,40 @@ if grid[start] == ">": dr, dc = 0, 1
 if grid[start] == "v": dr, dc = 1, 0
 if grid[start] == "<": dr, dc = 0, -1
 
-p = (start[0], start[1])
+p = ((start[0], start[1]), (dr, dc))
 print(start)
 print(dr, dc)
 
-while True:
-    new = (p[0]+dr,p[1]+dc)
-    if new not in grid:
-        break
-    else:
-        if grid[new] == "#":
-            dr, dc = dc, -dr
+def path(pos, deltar, deltac):
+    loops = 0
+    while True:
+        print("the beginning")
+        new = (pos[0][0]+deltar,pos[0][1]+deltac)
+        print(new)
+        if new not in grid:
+            break
         else:
-            p = (new)
-            visited.add(p)
-
-
+            if (new, (deltar, deltac)) in visited:
+                loops += 1
+                continue
+            if grid[new] == "#":
+                deltar, deltac = deltac, -deltar
+                continue
+            else:
+                pos = ((new),(deltar, deltac))
+                visited.add(pos)
+                print("the end")
+    print("loops:", loops)
+    return loops
+path(p, dr, dc)
 print(len(visited))
+print(visited)
+
+while True:
+    for i in range(len(visited)-1):
+        position = visited[i]
+        grid[visited[i+1][0]] = "#"
+        path(position, position[1][0], position[1][1])
+        print(i)
+
 
